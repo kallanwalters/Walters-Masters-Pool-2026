@@ -421,7 +421,7 @@
 <script>
 const TEAMS = {
   Chase:  ['Scottie Scheffler','Tommy Fleetwood','Cameron Young','Hideki Matsuyama','Jordan Spieth','Brooks Koepka'],
-  Kaden:  ['Bryson DeChambeau','Jon Rahm','Matt Fitzpatrick','Jason Day','Collin Morikawa','Tyrrell Hatton'],
+  Kaden:  ['Bryson DeChambeau','Jon Rahm','Matt Fitzpatrick','Jason Day','Sam Burns','Tyrrell Hatton'],
   Kallan: ['Xander Schauffele','Ludvig Åberg','Robert MacIntyre','Patrick Reed','Min Woo Lee','Jacob Bridgeman'],
   Pops:   ['Rory McIlroy','Justin Rose','Viktor Hovland','Chris Gotterup','J.J. Spaun','Maverick McNealy']
 };
@@ -430,7 +430,7 @@ const ALIASES = {
   'Scottie Scheffler':['scheffler'],'Tommy Fleetwood':['fleetwood'],'Cameron Young':['cameron young','cam young'],
   'Hideki Matsuyama':['matsuyama'],'Jordan Spieth':['spieth'],'Brooks Koepka':['koepka'],
   'Bryson DeChambeau':['dechambeau','bryson'],'Jon Rahm':['rahm'],'Matt Fitzpatrick':['fitzpatrick'],
-  'Jason Day':['jason day'],'Collin Morikawa':['morikawa'],'Tyrrell Hatton':['hatton'],
+  'Jason Day':['jason day'],'Sam Burns':['Burns'],'Tyrrell Hatton':['hatton'],
   'Xander Schauffele':['schauffele'],'Ludvig Åberg':['åberg','aberg'],'Robert MacIntyre':['macintyre','bob mac'],
   'Patrick Reed':['patrick reed'],'Min Woo Lee':['min woo'],'Jacob Bridgeman':['bridgeman'],
   'Rory McIlroy':['mcilroy'],'Justin Rose':['justin rose'],'Viktor Hovland':['hovland'],
@@ -480,7 +480,7 @@ async function fetchScores() {
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         messages: [{
           role: 'user',
-          content: `Search for the live 2026 Masters Tournament leaderboard right now and return ONLY a valid JSON object — no markdown, no explanation. Format: { "PlayerFullName": { "r1": int_or_null, "r2": int_or_null, "r3": int_or_null, "r4": int_or_null, "mc": bool } } where scores are integers relative to par. Include all of these players: Scottie Scheffler, Tommy Fleetwood, Cameron Young, Hideki Matsuyama, Jordan Spieth, Brooks Koepka, Bryson DeChambeau, Jon Rahm, Matt Fitzpatrick, Jason Day, Collin Morikawa, Tyrrell Hatton, Xander Schauffele, Ludvig Aberg, Robert MacIntyre, Patrick Reed, Min Woo Lee, Jacob Bridgeman, Rory McIlroy, Justin Rose, Viktor Hovland, Chris Gotterup, J.J. Spaun, Maverick McNealy. Return ONLY the JSON object.`
+          content: `Search for the live 2026 Masters Tournament leaderboard right now and return ONLY a valid JSON object — no markdown, no explanation. Format: { "PlayerFullName": { "r1": int_or_null, "r2": int_or_null, "r3": int_or_null, "r4": int_or_null, "mc": bool } } where scores are integers relative to par. Include all of these players: Scottie Scheffler, Tommy Fleetwood, Cameron Young, Hideki Matsuyama, Jordan Spieth, Brooks Koepka, Bryson DeChambeau, Jon Rahm, Matt Fitzpatrick, Jason Day, Sam Burns, Tyrrell Hatton, Xander Schauffele, Ludvig Aberg, Robert MacIntyre, Patrick Reed, Min Woo Lee, Jacob Bridgeman, Rory McIlroy, Justin Rose, Viktor Hovland, Chris Gotterup, J.J. Spaun, Maverick McNealy. Return ONLY the JSON object.`
         }]
       })
     });
