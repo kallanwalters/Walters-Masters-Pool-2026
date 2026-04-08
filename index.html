@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Masters Pool 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a3d2b;
+    --green-mid: #2d6a4f;
+    --green-light: #40916c;
+    --gold: #c9a84c;
+    --gold-light: #e9c46a;
+    --cream: #faf7f2;
+    --cream-dark: #f0ebe1;
+    --text: #1c1c1c;
+    --text-muted: #6b6560;
+    --under: #1a6b3c;
+    --over: #8b1a1a;
+    --card-bg: #ffffff;
+    --border: rgba(26,61,43,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(64,145,108,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(201,168,76,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--green);
+    color: var(--gold-light);
+    padding: 6px 18px;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+
+  .logo-flag { font-size: 14px; }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  /* Status */
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid;
+  }
+
+  .status-pill.live { background: #edf7f0; border-color: #40916c; color: var(--under); }
+  .status-pill.loading { background: #fef8ec; border-color: var(--gold); color: #7a5c1e; }
+  .status-pill.error { background: #fdf0f0; border-color: #c94040; color: var(--over); }
+
+  .pulse {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    background: var(--green);
+    color: var(--gold-light);
+    border: none;
+    border-radius: 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .refresh-btn:hover { background: var(--green-mid); }
+  .refresh-btn:active { transform: scale(0.97); }
+  .refresh-btn svg { width: 13px; height: 13px; }
+
+  .updated {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  /* Error */
+  .error-box {
+    background: #fdf0f0;
+    border: 1px solid #e9b8b8;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #7a2020;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
+
+  /* Main leaderboard */
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .lb-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 12px rgba(26,61,43,0.06);
+  }
+
+  .lb-head {
+    display: grid;
+    grid-template-columns: 36px 1fr 90px 54px 54px 54px 54px;
+    padding: 9px 18px;
+    background: var(--green);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(233,196,106,0.75);
+  }
+
+  .lb-head span:not(:first-child):not(:nth-child(2)) { text-align: center; }
+
+  .lb-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 90px 54px 54px 54px 54px;
+    padding: 13px 18px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    transition: background 0.1s;
+  }
+
+  .lb-row:last-child { border-bottom: none; }
+  .lb-row:hover { background: var(--cream); }
+
+  .lb-row.first-place { background: linear-gradient(90deg, rgba(201,168,76,0.07) 0%, transparent 60%); }
+
+  .rank {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+    text-align: center;
+  }
+
+  .rank.gold { color: var(--gold); font-weight: 600; }
+
+  .team-name-lb {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .sc {
+    text-align: center;
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sc.total { font-weight: 600; font-size: 15px; }
+  .under { color: var(--under); }
+  .over { color: var(--over); }
+  .even { color: var(--text-muted); }
+  .dash { color: var(--text-muted); opacity: 0.4; }
+
+  /* Team cards */
+  .teams-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  @media (max-width: 580px) {
+    .teams-grid { grid-template-columns: 1fr; }
+    .lb-head, .lb-row {
+      grid-template-columns: 30px 1fr 70px 44px 44px 44px 44px;
+      padding: 10px 12px;
+    }
+  }
+
+  .team-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(26,61,43,0.05);
+  }
+
+  .tc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 15px;
+    background: var(--green);
+    color: var(--gold-light);
+  }
+
+  .tc-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .tc-total {
+    font-size: 15px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tc-col-heads {
+    display: grid;
+    grid-template-columns: 1fr 36px 36px 36px 36px 42px;
+    padding: 5px 15px;
+    background: var(--cream-dark);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tc-col-heads span:not(:first-child) { text-align: center; }
+
+  .p-row {
+    display: grid;
+    grid-template-columns: 1fr 36px 36px 36px 36px 42px;
+    padding: 7px 15px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    font-size: 12px;
+  }
+
+  .p-row:last-child { border-bottom: none; }
+  .p-row.counting { background: rgba(64,145,108,0.07); }
+
+  .p-name {
+    font-size: 12px;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+  }
+
+  .p-score { text-align: center; font-variant-numeric: tabular-nums; }
+
+  .counting-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--green-light);
+    margin-right: 5px;
+    vertical-align: middle;
+    margin-bottom: 1px;
+  }
+
+  .mc-badge {
+    display: inline-block;
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    background: var(--cream-dark);
+    color: var(--text-muted);
+    margin-left: 4px;
+    vertical-align: middle;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 300;
+    letter-spacing: 0.03em;
+  }
+
+  .loading-shimmer {
+    background: linear-gradient(90deg, var(--cream-dark) 25%, #e8e4da 50%, var(--cream-dark) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 4px;
+    height: 16px;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="logo"><span class="logo-flag">⛳</span> Augusta National · April 2026</div>
+    <h1>Masters Pool 2026</h1>
+    <p class="subtitle">Best 4 of 6 player scores count each round</p>
+  </header>
+
+  <div class="status-row">
+    <div class="status-pill loading" id="status-pill">
+      <span class="pulse"></span>
+      <span id="status-text">Fetching scores…</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="updated" id="updated-text"></span>
+      <button class="refresh-btn" onclick="fetchScores()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5c2 0 3.7.9 4.8 2.3"/>
+          <polyline points="10 2 13.5 2 13.5 5.5"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="error-box" id="error-box"></div>
+
+  <p class="section-label">Standings</p>
+  <div class="lb-card">
+    <div class="lb-head">
+      <span>#</span><span>Team</span><span>Total</span>
+      <span>R1</span><span>R2</span><span>R3</span><span>R4</span>
+    </div>
+    <div id="lb-body">
+      <div class="lb-row"><span class="rank">—</span><span><div class="loading-shimmer" style="width:80px"></div></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="lb-row"><span class="rank">—</span><span><div class="loading-shimmer" style="width:70px"></div></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="lb-row"><span class="rank">—</span><span><div class="loading-shimmer" style="width:75px"></div></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="lb-row"><span class="rank">—</span><span><div class="loading-shimmer" style="width:60px"></div></span><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <p class="section-label">Player breakdown</p>
+  <div class="teams-grid" id="teams-grid"></div>
+
+  <footer>Masters Pool 2026 · Scores via live data · Updates every refresh</footer>
+</div>
+
+<script>
+const TEAMS = {
+  Chase:  ['Scottie Scheffler','Tommy Fleetwood','Cameron Young','Hideki Matsuyama','Jordan Spieth','Brooks Koepka'],
+  Kaden:  ['Bryson DeChambeau','Jon Rahm','Matt Fitzpatrick','Jason Day','Collin Morikawa','Tyrrell Hatton'],
+  Kallan: ['Xander Schauffele','Ludvig Åberg','Robert MacIntyre','Patrick Reed','Min Woo Lee','Jacob Bridgeman'],
+  Pops:   ['Rory McIlroy','Justin Rose','Viktor Hovland','Chris Gotterup','J.J. Spaun','Maverick McNealy']
+};
+
+const ALIASES = {
+  'Scottie Scheffler':['scheffler'],'Tommy Fleetwood':['fleetwood'],'Cameron Young':['cameron young','cam young'],
+  'Hideki Matsuyama':['matsuyama'],'Jordan Spieth':['spieth'],'Brooks Koepka':['koepka'],
+  'Bryson DeChambeau':['dechambeau','bryson'],'Jon Rahm':['rahm'],'Matt Fitzpatrick':['fitzpatrick'],
+  'Jason Day':['jason day'],'Collin Morikawa':['morikawa'],'Tyrrell Hatton':['hatton'],
+  'Xander Schauffele':['schauffele'],'Ludvig Åberg':['åberg','aberg'],'Robert MacIntyre':['macintyre','bob mac'],
+  'Patrick Reed':['patrick reed'],'Min Woo Lee':['min woo'],'Jacob Bridgeman':['bridgeman'],
+  'Rory McIlroy':['mcilroy'],'Justin Rose':['justin rose'],'Viktor Hovland':['hovland'],
+  'Chris Gotterup':['gotterup'],'J.J. Spaun':['spaun','jj spaun'],'Maverick McNealy':['mcnealy']
+};
+
+let scores = {};
+
+function matchName(n) {
+  const l = n.toLowerCase();
+  for (const [c, aliases] of Object.entries(ALIASES)) {
+    if (l.includes(c.toLowerCase())) return c;
+    for (const a of aliases) if (l.includes(a)) return c;
+  }
+  return null;
+}
+
+function fmt(s) {
+  if (s === null || s === undefined) return '<span class="dash">—</span>';
+  if (s === 0) return '<span class="even">E</span>';
+  return s < 0 ? `<span class="under">${s}</span>` : `<span class="over">+${s}</span>`;
+}
+
+function fmtTotal(s) {
+  if (s === null || s === undefined) return '<span class="dash">—</span>';
+  if (s === 0) return '<span class="even">E</span>';
+  return s < 0 ? `<span class="under">${s}</span>` : `<span class="over">+${s}</span>`;
+}
+
+function setStatus(type, msg) {
+  const pill = document.getElementById('status-pill');
+  pill.className = 'status-pill ' + type;
+  pill.innerHTML = `<span class="pulse"></span><span>${msg}</span>`;
+}
+
+async function fetchScores() {
+  setStatus('loading', 'Fetching scores…');
+  document.getElementById('error-box').style.display = 'none';
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{
+          role: 'user',
+          content: `Search for the live 2026 Masters Tournament leaderboard right now and return ONLY a valid JSON object — no markdown, no explanation. Format: { "PlayerFullName": { "r1": int_or_null, "r2": int_or_null, "r3": int_or_null, "r4": int_or_null, "mc": bool } } where scores are integers relative to par. Include all of these players: Scottie Scheffler, Tommy Fleetwood, Cameron Young, Hideki Matsuyama, Jordan Spieth, Brooks Koepka, Bryson DeChambeau, Jon Rahm, Matt Fitzpatrick, Jason Day, Collin Morikawa, Tyrrell Hatton, Xander Schauffele, Ludvig Aberg, Robert MacIntyre, Patrick Reed, Min Woo Lee, Jacob Bridgeman, Rory McIlroy, Justin Rose, Viktor Hovland, Chris Gotterup, J.J. Spaun, Maverick McNealy. Return ONLY the JSON object.`
+        }]
+      })
+    });
+
+    const data = await resp.json();
+    const text = data.content.map(b => b.type === 'text' ? b.text : '').join('');
+    const s = text.indexOf('{'), e = text.lastIndexOf('}');
+    const parsed = JSON.parse(text.slice(s, e + 1));
+
+    scores = {};
+    for (const [k, v] of Object.entries(parsed)) {
+      const c = matchName(k);
+      if (c) scores[c] = v;
+    }
+
+    setStatus('live', 'Live scores');
+    document.getElementById('updated-text').textContent = 'Updated ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    render();
+  } catch (err) {
+    setStatus('error', 'Score fetch failed');
+    const eb = document.getElementById('error-box');
+    eb.style.display = 'block';
+    eb.textContent = 'Could not load live scores. Scores may not be available yet, or check your connection. Click Refresh to try again.';
+    // Render with empty scores so structure shows
+    render();
+  }
+}
+
+function best4ofRound(players, round) {
+  const vals = players.map(p => (scores[p] || {})[round] ?? null).filter(v => v !== null);
+  if (!vals.length) return null;
+  return vals.sort((a,b)=>a-b).slice(0,4).reduce((a,b)=>a+b,0);
+}
+
+function render() {
+  const rounds = ['r1','r2','r3','r4'];
+
+  const teamData = Object.entries(TEAMS).map(([name, players]) => {
+    const roundTotals = rounds.map(r => best4ofRound(players, r));
+    const hasAny = roundTotals.some(v => v !== null);
+    const total = hasAny ? roundTotals.filter(v=>v!==null).reduce((a,b)=>a+b,0) : null;
+    return { name, players, roundTotals, total };
+  });
+
+  teamData.sort((a,b) => {
+    if (a.total === null && b.total === null) return 0;
+    if (a.total === null) return 1;
+    if (b.total === null) return -1;
+    return a.total - b.total;
+  });
+
+  // Leaderboard
+  document.getElementById('lb-body').innerHTML = teamData.map((t, i) => `
+    <div class="lb-row${i===0?' first-place':''}">
+      <span class="rank${i===0?' gold':''}">${i+1}</span>
+      <span class="team-name-lb">${t.name}</span>
+      <span class="sc total">${fmtTotal(t.total)}</span>
+      ${t.roundTotals.map(s=>`<span class="sc">${fmt(s)}</span>`).join('')}
+    </div>`).join('');
+
+  // Team cards — in leaderboard order
+  document.getElementById('teams-grid').innerHTML = teamData.map(t => {
+    const prows = t.players.map(p => {
+      const s = scores[p] || {};
+      const rScores = rounds.map(r => s[r] ?? null);
+      const ptotal = rScores.filter(v=>v!==null).length ? rScores.filter(v=>v!==null).reduce((a,b)=>a+b,0) : null;
+      return { name: p, rScores, ptotal, mc: s.mc || false };
+    });
+
+    // For each round, find which players are in the best 4
+    const countingByRound = rounds.map((r, ri) => {
+      const vals = prows.map(p => ({ name: p.name, v: p.rScores[ri] })).filter(x => x.v !== null);
+      const sorted = [...vals].sort((a,b)=>a.v-b.v).slice(0,4).map(x=>x.name);
+      return new Set(sorted);
+    });
+
+    const isCounting = (pname) => countingByRound.some(s => s.has(pname));
+
+    const tcTotal = fmtTotal(t.total);
+    const tcTotalColor = t.total === null ? '' : t.total < 0 ? '#a8d5ba' : t.total > 0 ? '#f5a0a0' : 'rgba(233,196,106,0.8)';
+
+    return `<div class="team-card">
+      <div class="tc-header">
+        <span class="tc-name">${t.name}</span>
+        <span class="tc-total" style="color:${tcTotalColor||'var(--gold-light)'}">${t.total===null?'—':t.total===0?'E':t.total<0?t.total:'+'+t.total}</span>
+      </div>
+      <div class="tc-col-heads"><span>Player</span><span>R1</span><span>R2</span><span>R3</span><span>R4</span><span>Total</span></div>
+      ${prows.map(p => `
+        <div class="p-row${isCounting(p.name)?' counting':''}">
+          <span class="p-name">${isCounting(p.name)?'<span class="counting-dot"></span>':''}${p.name.split(' ').slice(-1)[0]}${p.mc?'<span class="mc-badge">CUT</span>':''}</span>
+          ${p.rScores.map(s=>`<span class="p-score">${fmt(s)}</span>`).join('')}
+          <span class="p-score" style="font-weight:500">${fmt(p.ptotal)}</span>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+fetchScores();
+</script>
+</body>
+</html>
