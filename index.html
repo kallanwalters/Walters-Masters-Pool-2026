@@ -85,7 +85,7 @@ async function fetchScores(){
   document.getElementById('status').innerText = 'Fetching live scores...';
 
   try{
-    const res = await fetch('https://site.web.api.espn.com/apis/v2/sports/golf/pga/leaderboard');
+    const res = await fetch('https://api.allorigins.win/raw?url=https://site.web.api.espn.com/apis/v2/sports/golf/pga/leaderboard');
     const data = await res.json();
 
     const scores = {};
